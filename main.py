@@ -1,5 +1,6 @@
 """Bolão Copa 2026 — backend v2"""
-import datetime, hashlib, hmac, os, secrets, smtplib, sqlite3
+import asyncio, datetime, hashlib, hmac, os, secrets, smtplib, sqlite3
+import httpx
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
@@ -18,6 +19,7 @@ GMAIL_USER   = os.environ.get("GMAIL_USER", "")
 GMAIL_APP    = os.environ.get("GMAIL_APP", "")
 PRECO_BRASIL = float(os.environ.get("PRECO_BRASIL", "5"))
 PRECO_GRUPOS = float(os.environ.get("PRECO_GRUPOS", "10"))
+FOOTBALL_DATA_TOKEN = os.environ.get("FOOTBALL_DATA_TOKEN", "")
 
 app = FastAPI(title="Bolão Copa 2026")
 
@@ -232,6 +234,83 @@ def send_email(to, subject, html):
     except Exception as e:
         print(f"[email error] {e}")
         return False
+
+# ── sincronização de resultados (football-data.org) ────────────────────────────
+
+# Mapa: nome em inglês (API football-data.org) -> nome em português (nosso banco)
+TEAM_NAME_MAP = {
+    "Mexico": "México", "South Africa": "África do Sul", "South Korea": "Coreia do Sul",
+    "Korea Republic": "Coreia do Sul", "Czech Republic": "Rep. Tcheca", "Czechia": "Rep. Tcheca",
+    "Canada": "Canadá", "Bosnia and Herzegovina": "Bósnia e Herz.", "Qatar": "Catar",
+    "Switzerland": "Suíça", "Brazil": "Brasil", "Morocco": "Marrocos", "Haiti": "Haiti",
+    "Scotland": "Escócia", "United States": "Estados Unidos", "USA": "Estados Unidos",
+    "Paraguay": "Paraguai", "Australia": "Austrália", "Turkey": "Turquia", "Türkiye": "Turquia",
+    "Germany": "Alemanha", "Curacao": "Curaçao", "Curaçao": "Curaçao",
+    "Ivory Coast": "Costa do Marfim", "Côte d'Ivoire": "Costa do Marfim", "Cote d'Ivoire": "Costa do Marfim",
+    "Ecuador": "Equador", "Netherlands": "Holanda", "Japan": "Japão", "Sweden": "Suécia",
+    "Tunisia": "Tunísia", "Belgium": "Bélgica", "Egypt": "Egito", "Iran": "Irã", "IR Iran": "Irã",
+    "New Zealand": "Nova Zelândia", "Spain": "Espanha", "Cape Verde": "Cabo Verde",
+    "Saudi Arabia": "Arábia Saudita", "Uruguay": "Uruguai", "France": "França",
+    "Senegal": "Senegal", "Iraq": "Iraque", "Norway": "Noruega", "Argentina": "Argentina",
+    "Algeria": "Argélia", "Austria": "Áustria", "Jordan": "Jordânia", "Portugal": "Portugal",
+    "DR Congo": "R.D. Congo", "Congo DR": "R.D. Congo", "Uzbekistan": "Uzbequistão",
+    "Colombia": "Colômbia", "England": "Inglaterra", "Croatia": "Croácia", "Ghana": "Gana",
+    "Panama": "Panamá",
+}
+
+async def sync_results_from_api() -> dict:
+    """Busca jogos finalizados na football-data.org e atualiza o banco."""
+    if not FOOTBALL_DATA_TOKEN:
+        return {"ok": False, "error": "FOOTBALL_DATA_TOKEN não configurado", "updated": 0}
+
+    headers = {"X-Auth-Token": FOOTBALL_DATA_TOKEN}
+    url = "https://api.football-data.org/v4/competitions/WC/matches"
+    try:
+        async with httpx.AsyncClient(timeout=20) as client:
+            r = await client.get(url, headers=headers, params={"status": "FINISHED"})
+            if r.status_code != 200:
+                return {"ok": False, "error": f"API retornou {r.status_code}", "updated": 0}
+            data = r.json()
+    except Exception as e:
+        return {"ok": False, "error": str(e), "updated": 0}
+
+    matches = data.get("matches", [])
+    conn = get_db()
+    updated = 0
+    for m in matches:
+        home_en = m.get("homeTeam", {}).get("name", "")
+        away_en = m.get("awayTeam", {}).get("name", "")
+        home_pt = TEAM_NAME_MAP.get(home_en)
+        away_pt = TEAM_NAME_MAP.get(away_en)
+        if not home_pt or not away_pt:
+            continue
+        score = m.get("score", {}).get("fullTime", {})
+        hs, as_ = score.get("home"), score.get("away")
+        if hs is None or as_ is None:
+            continue
+        row = conn.execute(
+            "SELECT id, status, home_score, away_score FROM matches "
+            "WHERE home=? AND away=? AND phase='grupos'", (home_pt, away_pt)
+        ).fetchone()
+        if not row:
+            continue
+        if row["status"] != "finished" or row["home_score"] != hs or row["away_score"] != as_:
+            conn.execute(
+                "UPDATE matches SET home_score=?, away_score=?, status='finished' WHERE id=?",
+                (hs, as_, row["id"]))
+            updated += 1
+    conn.commit()
+    conn.close()
+    return {"ok": True, "updated": updated, "total_finished_api": len(matches)}
+
+async def _periodic_sync():
+    """Roda a sincronização a cada hora, indefinidamente."""
+    while True:
+        try:
+            await sync_results_from_api()
+        except Exception as e:
+            print(f"[sync error] {e}")
+        await asyncio.sleep(3600)  # 1 hora
 
 def email_aprovacao(user):
     html = f"""<div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto">
@@ -549,9 +628,16 @@ def set_result(body: ResultBody, admin=Depends(require_admin)):
     conn.close()
     return {"ok": True}
 
+@app.post("/api/admin/sync-results")
+async def sync_results_now(admin=Depends(require_admin)):
+    """Busca resultados na football-data.org agora (sob demanda)."""
+    return await sync_results_from_api()
+
 @app.on_event("startup")
-def startup():
+async def startup():
     init_db()
+    if FOOTBALL_DATA_TOKEN:
+        asyncio.create_task(_periodic_sync())
 
 if __name__ == "__main__":
     import uvicorn

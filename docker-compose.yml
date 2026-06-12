@@ -4,7 +4,7 @@ services:
     container_name: bolao
     restart: unless-stopped
     ports:
-      - "0.0.0.0:8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       BOLAO_DB: /data/bolao.db
       BOLAO_SECRET: "${BOLAO_SECRET}"
@@ -12,8 +12,9 @@ services:
       ADMIN_PASS: "${ADMIN_PASS}"
       GMAIL_USER: "${GMAIL_USER}"
       GMAIL_APP: "${GMAIL_APP}"
-      PRECO_BRASIL: "5"
-      PRECO_GRUPOS: "10"
+      PRECO_BRASIL: "${PRECO_BRASIL:-5}"
+      PRECO_GRUPOS: "${PRECO_GRUPOS:-10}"
+      FOOTBALL_DATA_TOKEN: "${FOOTBALL_DATA_TOKEN}"
     volumes:
       - bolao-data:/data
 

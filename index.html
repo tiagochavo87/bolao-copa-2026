@@ -438,8 +438,13 @@ main{max-width:800px;margin:0 auto;padding:1.5rem 1.25rem 4rem}
         <div id="adminUsers"></div>
       </div>
       <div class="admin-section">
-        <div class="admin-section-title"><i class="ti ti-edit"></i> Resultados pendentes</div>
-        <p class="section-sub"><i class="ti ti-info-circle"></i> Partidas já iniciadas sem resultado registrado.</p>
+        <div class="admin-section-title" style="justify-content:space-between">
+          <span><i class="ti ti-edit"></i> Resultados pendentes</span>
+          <button class="btn btn-ghost btn-sm" onclick="syncResults()" id="syncBtn">
+            <i class="ti ti-refresh"></i> Buscar resultados
+          </button>
+        </div>
+        <p class="section-sub"><i class="ti ti-info-circle"></i> Partidas já iniciadas sem resultado registrado. A busca automática roda a cada hora.</p>
         <div id="adminMatches"></div>
       </div>
     </div>
@@ -796,6 +801,28 @@ async function saveResultInline(mid){
     toast('Resultado salvo!','success');
     await loadMatches();
   }catch(e){toast(e.message,'error');}
+}
+
+async function syncResults(){
+  const btn=document.getElementById('syncBtn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader"></i> Buscando…';
+  try{
+    const r=await api('POST','/admin/sync-results');
+    if(!r.ok){
+      toast(r.error||'Não foi possível buscar resultados.','error');
+    }else if(r.updated>0){
+      toast(`${r.updated} resultado(s) atualizado(s)!`,'success');
+      await loadMatches();
+      await loadAdmin();
+    }else{
+      toast('Nenhum resultado novo encontrado.','success');
+    }
+  }catch(e){toast(e.message,'error');}
+  finally{
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-refresh"></i> Buscar resultados';
+  }
 }
 
 function switchRankTab(tab, btn){
