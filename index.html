@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bolão Copa 2026</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#4a7c59;--green-light:#e8f2eb;--green-mid:#c5deca;
+  --green-dark:#2d5c3e;--white:#fff;--gray-50:#f7f9f8;--gray-100:#eef2f0;
+  --gray-200:#d4ddd7;--gray-400:#8fa896;--gray-600:#4e6356;
+  --gray-800:#1e2d24;--text:#1e2d24;--text-muted:#5a7060;
+  --r:8px;--rl:12px;--rxl:16px;
+  --shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 12px rgba(0,0,0,.1);
+}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--gray-50);
+  color:var(--text);font-size:15px;line-height:1.6;min-height:100vh}
+header{background:var(--white);border-bottom:1px solid var(--gray-200);
+  position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.header-inner{max-width:800px;margin:0 auto;padding:0 1.25rem;
+  display:flex;align-items:center;gap:10px;height:58px}
+.logo{font-size:16px;font-weight:700;color:var(--green-dark);
+  display:flex;align-items:center;gap:8px}
+.logo-icon{width:32px;height:32px;background:var(--green-dark);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:17px}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.header-user{font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:6px;
+  padding:5px 10px;background:var(--gray-100);border-radius:20px}
+.header-user i{font-size:15px;color:var(--green)}
+nav{background:var(--white);border-bottom:1px solid var(--gray-100);overflow-x:auto}
+.nav-inner{max-width:800px;margin:0 auto;padding:0 1.25rem;display:flex}
+.nav-btn{background:none;border:none;cursor:pointer;padding:10px 16px;font-size:13px;
+  font-weight:500;color:var(--text-muted);border-bottom:2px solid transparent;
+  white-space:nowrap;display:flex;align-items:center;gap:6px;transition:color .15s,border-color .15s}
+.nav-btn i{font-size:16px}
+.nav-btn:hover{color:var(--green-dark)}
+.nav-btn.active{color:var(--green-dark);border-bottom-color:var(--green)}
+main{max-width:800px;margin:0 auto;padding:1.5rem 1.25rem 4rem}
+.view{display:none}.view.active{display:block}
+
+/* auth */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#e8f2eb 0%,#f7f9f8 60%)}
+.auth-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--rxl);
+  padding:2rem;width:100%;max-width:380px;box-shadow:var(--shadow-md)}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.auth-logo-icon{width:40px;height:40px;background:var(--green-dark);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:22px}
+.auth-logo h1{font-size:20px;font-weight:700;color:var(--green-dark)}
+.auth-sub{font-size:13px;color:var(--text-muted);margin-bottom:1.5rem}
+.auth-tabs{display:flex;background:var(--gray-100);border-radius:var(--r);padding:3px;
+  margin-bottom:1.25rem;gap:3px}
+.auth-tab{flex:1;background:none;border:none;cursor:pointer;padding:7px;font-size:13px;
+  font-weight:500;color:var(--text-muted);border-radius:6px;transition:background .15s,color .15s}
+.auth-tab.active{background:var(--white);color:var(--green-dark);box-shadow:var(--shadow)}
+.field{margin-bottom:.875rem}
+.field label{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;
+  color:var(--text-muted);margin-bottom:5px}
+.field label i{font-size:14px}
+.field input{width:100%;padding:9px 12px;border:1px solid var(--gray-200);border-radius:var(--r);
+  font-size:14px;color:var(--text);background:var(--white);outline:none;
+  transition:border-color .15s,box-shadow .15s}
+.field input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(74,124,89,.12)}
+.field input::placeholder{color:var(--gray-400)}
+.err{font-size:13px;color:#c0392b;margin-top:-4px;margin-bottom:.75rem;min-height:18px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--r);
+  font-size:14px;font-weight:500;cursor:pointer;border:1px solid transparent;
+  transition:all .15s;white-space:nowrap}
+.btn i{font-size:16px}
+.btn-primary{background:var(--green);color:var(--white);border-color:var(--green)}
+.btn-primary:hover{background:var(--green-dark);border-color:var(--green-dark)}
+.btn-ghost{background:none;color:var(--text-muted);border-color:var(--gray-200)}
+.btn-ghost:hover{background:var(--gray-100);color:var(--text)}
+.btn-sm{padding:6px 14px;font-size:13px}
+.btn-sm i{font-size:14px}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+
+/* modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;
+  display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal{background:var(--white);border-radius:var(--rxl);width:100%;max-width:500px;
+  max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--gray-100);
+  display:flex;align-items:center;justify-content:space-between}
+.modal-header h2{font-size:16px;font-weight:600;color:var(--green-dark);
+  display:flex;align-items:center;gap:8px}
+.modal-header h2 i{font-size:20px}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--gray-400);
+  font-size:20px;padding:4px;border-radius:6px;display:flex;align-items:center}
+.modal-close:hover{background:var(--gray-100);color:var(--text)}
+.modal-body{padding:1.5rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--gray-100);
+  display:flex;justify-content:flex-end;gap:8px}
+.welcome-banner{background:var(--green-light);border-radius:var(--rl);
+  padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;gap:12px}
+.welcome-banner-icon{font-size:32px;flex-shrink:0}
+.welcome-banner h3{font-size:15px;font-weight:600;color:var(--green-dark);margin-bottom:4px}
+.welcome-banner p{font-size:13px;color:var(--green-dark);opacity:.85;margin:0}
+.rules-section{margin-bottom:1.25rem}
+.rules-section h3{font-size:14px;font-weight:600;color:var(--green-dark);
+  margin-bottom:.5rem;display:flex;align-items:center;gap:6px}
+.rules-section h3 i{font-size:16px}
+.rules-section ul{padding-left:1.25rem}
+.rules-section li{font-size:14px;color:var(--text-muted);margin-bottom:4px;line-height:1.6}
+.pts-table{width:100%;border-collapse:collapse;margin-top:.5rem}
+.pts-table th{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--text-muted);padding:6px 10px;text-align:left;border-bottom:1px solid var(--gray-200)}
+.pts-table td{padding:8px 10px;border-bottom:1px solid var(--gray-100);font-size:14px}
+.pts-table tr:last-child td{border-bottom:none}
+.pts-badge{display:inline-flex;align-items:center;gap:4px;background:var(--green-light);
+  color:var(--green-dark);border-radius:20px;padding:2px 10px;font-weight:600;font-size:13px}
+
+/* filtros */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem}
+.filter-btn{background:var(--white);border:1px solid var(--gray-200);border-radius:20px;
+  padding:5px 14px;font-size:13px;color:var(--text-muted);cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;gap:5px}
+.filter-btn i{font-size:14px}
+.filter-btn:hover{border-color:var(--green);color:var(--green-dark)}
+.filter-btn.active{background:var(--green-light);border-color:var(--green);
+  color:var(--green-dark);font-weight:500}
+
+/* match cards */
+.match-group{margin-bottom:1.75rem}
+.match-group-label{font-size:11px;font-weight:700;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;padding-bottom:8px;
+  border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:6px}
+.match-group-label i{font-size:14px;color:var(--green)}
+.match-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--rl);
+  padding:1rem 1.25rem;margin-bottom:10px;transition:border-color .15s,box-shadow .15s}
+.match-card:hover{border-color:var(--green-mid);box-shadow:var(--shadow)}
+.match-card.finished{border-left:3px solid var(--gray-200)}
+.match-card.locked{background:var(--gray-50)}
+.match-card.brasil-card{border-left:3px solid var(--green)}
+.match-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px}
+.match-meta{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;
+  border-radius:20px;font-size:11px;font-weight:600}
+.badge i{font-size:12px}
+.badge-group{background:var(--green-light);color:var(--green-dark)}
+.badge-finished{background:var(--gray-100);color:var(--gray-600)}
+.badge-open{background:#e8f5e9;color:#2e7d32}
+.badge-soon{background:#fff8e1;color:#e65100}
+
+/* times com bandeira */
+.match-teams{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.team-side{flex:1;display:flex;align-items:center;gap:8px}
+.team-side.away{justify-content:flex-end;flex-direction:row-reverse}
+.flag-emoji{font-size:22px;line-height:1;flex-shrink:0}
+.flag-sm{font-size:16px}
+.team-flag-placeholder{font-size:18px}
+.team-name{font-weight:600;font-size:15px}
+.score-display{display:flex;align-items:center;gap:6px;min-width:72px;justify-content:center;flex-shrink:0}
+.score-num{font-size:24px;font-weight:700;color:var(--green-dark);min-width:28px;text-align:center}
+.score-sep{color:var(--gray-400);font-size:18px}
+
+/* palpite */
+.tip-row{display:flex;align-items:center;gap:8px;padding-top:12px;border-top:1px solid var(--gray-100);flex-wrap:wrap}
+.tip-label{font-size:12px;color:var(--text-muted);margin-right:auto;display:flex;align-items:center;gap:5px}
+.tip-label i{font-size:14px;color:var(--green)}
+.tip-input{width:50px;padding:7px 8px;text-align:center;border:1px solid var(--gray-200);
+  border-radius:var(--r);font-size:17px;font-weight:700;color:var(--text);
+  background:var(--white);outline:none;transition:border-color .15s,box-shadow .15s}
+.tip-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(74,124,89,.12)}
+.tip-input::-webkit-outer-spin-button,.tip-input::-webkit-inner-spin-button{-webkit-appearance:none}
+.tip-sep{font-size:14px;color:var(--gray-400);font-weight:500}
+.tip-saved{font-size:12px;color:var(--green);display:none;align-items:center;gap:4px;font-weight:500}
+.tip-saved.show{display:flex}
+.locked-tip{font-size:13px;color:var(--text-muted);padding-top:10px;
+  border-top:1px solid var(--gray-100);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.locked-tip i{font-size:15px;color:var(--gray-400)}
+.locked-tip strong{color:var(--text)}
+.tip-pill{display:inline-flex;align-items:center;gap:4px;border-radius:20px;
+  padding:3px 10px;font-size:12px;font-weight:600}
+.tip-hit{background:#e8f5e9;color:#2e7d32}
+.tip-miss{background:var(--gray-100);color:var(--gray-600)}
+.tip-pending{background:var(--green-light);color:var(--green-dark)}
+
+/* admin result inline */
+.admin-result-row{display:flex;align-items:center;gap:8px;padding-top:10px;
+  border-top:1px solid var(--gray-100);background:var(--gray-50);
+  margin:-1rem -1.25rem -1rem;padding:10px 1.25rem;border-radius:0 0 var(--rl) var(--rl)}
+.admin-result-row label{font-size:12px;color:var(--text-muted);font-weight:500;
+  display:flex;align-items:center;gap:4px;margin-right:4px}
+.admin-result-row label i{font-size:14px;color:var(--green)}
+.res-input{width:44px;padding:5px 6px;text-align:center;border:1px solid var(--gray-200);
+  border-radius:var(--r);font-size:15px;font-weight:700;background:var(--white);outline:none}
+.res-input:focus{border-color:var(--green)}
+.res-input::-webkit-outer-spin-button,.res-input::-webkit-inner-spin-button{-webkit-appearance:none}
+
+/* ranking */
+.ranking-card{background:var(--white);border:1px solid var(--gray-200);
+  border-radius:var(--rl);overflow:hidden;box-shadow:var(--shadow)}
+.ranking-header{padding:.875rem 1.25rem;background:var(--green-dark);
+  display:flex;align-items:center;gap:8px}
+.ranking-header i{font-size:20px;color:rgba(255,255,255,.8)}
+.ranking-header h3{font-size:15px;font-weight:600;color:var(--white)}
+.ranking-header span{font-size:13px;color:rgba(255,255,255,.7)}
+.ranking-row{display:flex;align-items:center;gap:12px;padding:.875rem 1.25rem;
+  border-bottom:1px solid var(--gray-100);transition:background .1s}
+.ranking-row:last-child{border-bottom:none}
+.ranking-row:hover{background:var(--gray-50)}
+.ranking-row.me{background:var(--green-light)}
+.rank-pos{width:28px;text-align:center;font-size:14px;font-weight:600;color:var(--text-muted);flex-shrink:0}
+.rank-medal{font-size:20px;line-height:1}
+.rank-name{flex:1;font-weight:500;font-size:14px}
+.rank-you{font-size:11px;background:var(--green);color:var(--white);
+  border-radius:10px;padding:1px 7px;font-weight:600;margin-left:4px}
+.rank-pts{font-size:18px;font-weight:700;color:var(--green-dark)}
+.rank-meta{font-size:12px;color:var(--text-muted);text-align:right;line-height:1.4}
+.rank-devido{font-size:11px;color:var(--green);font-weight:600;margin-top:2px}
+
+/* abas do ranking */
+.rank-tabs{display:flex;background:var(--gray-100);border-radius:var(--r);padding:3px;gap:3px;margin-bottom:1rem}
+.rank-tab{flex:1;background:none;border:none;cursor:pointer;padding:7px 6px;font-size:13px;
+  font-weight:500;color:var(--text-muted);border-radius:6px;transition:background .15s,color .15s;white-space:nowrap}
+.rank-tab.active{background:var(--white);color:var(--green-dark);box-shadow:var(--shadow)}
+.rank-panel{display:none}.rank-panel.active{display:block}
+
+/* meus palpites */
+.tips-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.tips-header h2{font-size:18px;font-weight:600;color:var(--green-dark);display:flex;align-items:center;gap:8px}
+.tips-header h2 i{font-size:22px}
+.preco-card{background:var(--white);border:1px solid var(--green-mid);border-radius:var(--rl);
+  padding:1.25rem;margin-bottom:1.25rem;border-left:4px solid var(--green)}
+.preco-title{font-size:14px;font-weight:600;color:var(--green-dark);
+  display:flex;align-items:center;gap:6px;margin-bottom:.875rem}
+.preco-title i{font-size:18px}
+.preco-rows{display:flex;flex-direction:column;gap:6px;margin-bottom:.875rem}
+.preco-row{display:flex;justify-content:space-between;align-items:center;
+  font-size:13px;color:var(--text-muted)}
+.preco-qtd{font-size:12px;color:var(--gray-400);margin-left:4px}
+.preco-val{font-weight:600;color:var(--text)}
+.preco-total{display:flex;justify-content:space-between;align-items:center;
+  padding-top:.875rem;border-top:1px solid var(--gray-200);
+  font-weight:600;font-size:15px;color:var(--green-dark)}
+.preco-total-val{font-size:22px;font-weight:700;color:var(--green-dark)}
+.preco-obs{font-size:11px;color:var(--gray-400);margin-top:.75rem;display:flex;align-items:center;gap:4px}
+.preco-obs i{font-size:13px}
+.tip-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray-100)}
+.tip-item:last-child{border-bottom:none}
+.tip-match{flex:1}
+.tip-match-teams{font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px}
+.tip-flag{width:20px;height:14px;border-radius:2px;object-fit:cover;border:1px solid var(--gray-200)}
+.tip-match-meta{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:5px;margin-top:2px}
+.tip-match-meta i{font-size:13px}
+.tip-score{background:var(--green-light);color:var(--green-dark);
+  border-radius:20px;padding:4px 14px;font-weight:700;font-size:14px;white-space:nowrap}
+
+/* admin */
+.admin-section{margin-bottom:2rem}
+.admin-section-title{font-size:13px;font-weight:700;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:.07em;margin-bottom:.875rem;display:flex;align-items:center;gap:6px}
+.admin-section-title i{font-size:16px;color:var(--green)}
+.user-row{display:flex;align-items:center;gap:10px;padding:.75rem 1rem;
+  background:var(--white);border:1px solid var(--gray-200);border-radius:var(--r);margin-bottom:6px}
+.user-row-info{flex:1}
+.user-row-name{font-weight:600;font-size:14px}
+.user-row-email{font-size:12px;color:var(--text-muted)}
+.role-select{padding:5px 10px;border:1px solid var(--gray-200);border-radius:var(--r);
+  font-size:13px;background:var(--white);color:var(--text);cursor:pointer;outline:none}
+.role-select:focus{border-color:var(--green)}
+.pending-tag{background:#fff8e1;color:#e65100;font-size:11px;font-weight:600;border-radius:20px;padding:2px 8px}
+.section-sub{font-size:13px;color:var(--text-muted);margin-bottom:1.25rem;display:flex;align-items:center;gap:5px}
+.section-sub i{font-size:14px;color:var(--green)}
+
+/* ── mobile ── */
+@media(max-width:600px){
+  .header-inner{padding:0 .875rem;gap:6px}
+  .logo{font-size:14px}
+  .logo-icon{width:28px;height:28px;font-size:15px}
+  .header-user{padding:4px 8px;font-size:12px}
+  .btn-sm{padding:5px 10px;font-size:12px}
+  main{padding:1rem .875rem 4rem}
+  .match-card{padding:.875rem 1rem}
+  .team-name{font-size:13px}
+  .score-num{font-size:20px}
+  .tip-input{width:44px;font-size:15px;padding:6px 5px}
+  .match-header{gap:4px}
+  .match-meta{font-size:11px;gap:4px}
+  .badge{font-size:10px;padding:2px 6px}
+  .ranking-row{padding:.75rem 1rem;gap:8px}
+  .rank-pts{font-size:16px}
+  .filters{gap:6px}
+  .filter-btn{padding:4px 10px;font-size:12px}
+  .nav-btn{padding:8px 12px;font-size:12px}
+  .modal{margin:.5rem}
+  .modal-body{padding:1rem}
+  .preco-card{padding:1rem}
+  .preco-total-val{font-size:18px}
+  .tip-row{gap:6px}
+  .admin-result-row{flex-wrap:wrap;gap:6px}
+  .tips-header{flex-direction:column;align-items:flex-start;gap:.75rem}
+  .auth-card{padding:1.5rem}
+}
+
+/* toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);
+  background:var(--gray-800);color:var(--white);padding:10px 18px;border-radius:24px;
+  font-size:13px;font-weight:500;opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;z-index:999;white-space:nowrap;
+  display:flex;align-items:center;gap:8px}
+.toast i{font-size:16px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success i{color:#69c97a}
+.toast.error i{color:#f08080}
+
+/* empty / pending */
+.empty{padding:3rem 0;text-align:center;color:var(--text-muted);font-size:14px}
+.empty-icon i{font-size:48px;color:var(--gray-400)}
+.empty p{margin-top:4px;font-size:13px}
+.pending-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--gray-50)}
+.pending-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--rxl);
+  padding:2.5rem 2rem;max-width:380px;text-align:center;box-shadow:var(--shadow-md)}
+.pending-card .pending-icon i{font-size:48px;color:var(--gray-400)}
+.pending-card h2{font-size:18px;font-weight:600;color:var(--green-dark);margin:.75rem 0 .5rem}
+.pending-card p{font-size:14px;color:var(--text-muted)}
+</style>
+</head>
+<body>
+
+<div id="authGate" style="display:none">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">⚽</div>
+        <h1>Bolão Copa 2026</h1>
+      </div>
+      <p class="auth-sub">Grupo privado de palpites</p>
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active" onclick="setAuthMode('login')">Entrar</button>
+        <button id="tabReg" class="auth-tab" onclick="setAuthMode('register')">Cadastrar</button>
+      </div>
+      <div id="formLogin">
+        <div class="field"><label><i class="ti ti-user"></i> Usuário</label>
+          <input id="loginUser" type="text" placeholder="seu usuário" autocomplete="username"></div>
+        <div class="field"><label><i class="ti ti-lock"></i> Senha</label>
+          <input id="loginPass" type="password" placeholder="••••••" autocomplete="current-password"></div>
+        <p class="err" id="loginErr"></p>
+        <button class="btn btn-primary btn-full" onclick="doLogin()"><i class="ti ti-login"></i> Entrar</button>
+      </div>
+      <div id="formReg" style="display:none">
+        <div class="field"><label><i class="ti ti-user"></i> Usuário</label>
+          <input id="regUser" type="text" placeholder="escolha um nome" autocomplete="username"></div>
+        <div class="field"><label><i class="ti ti-mail"></i> Email</label>
+          <input id="regEmail" type="email" placeholder="seu@email.com" autocomplete="email"></div>
+        <div class="field"><label><i class="ti ti-lock"></i> Senha</label>
+          <input id="regPass" type="password" placeholder="mínimo 6 caracteres" autocomplete="new-password"></div>
+        <p class="err" id="regErr"></p>
+        <button class="btn btn-primary btn-full" onclick="doRegister()"><i class="ti ti-user-plus"></i> Criar conta</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="pendingGate" style="display:none">
+  <div class="pending-wrap">
+    <div class="pending-card">
+      <div class="pending-icon"><i class="ti ti-clock-hour-4"></i></div>
+      <h2>Aguardando aprovação</h2>
+      <p>Seu cadastro foi recebido.<br>Um administrador vai liberar seu acesso em breve.</p>
+      <br><button class="btn btn-ghost btn-sm" onclick="doLogout()"><i class="ti ti-logout"></i> Sair</button>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <header>
+    <div class="header-inner">
+      <div class="logo"><div class="logo-icon">⚽</div> Bolão Copa 2026</div>
+      <div class="header-right">
+        <button class="btn btn-ghost btn-sm" onclick="openModal('modalRules')">
+          <i class="ti ti-info-circle"></i> Regras
+        </button>
+        <div class="header-user"><i class="ti ti-user-circle"></i><span id="headerUser"></span></div>
+        <button class="btn btn-ghost btn-sm" onclick="doLogout()"><i class="ti ti-logout"></i></button>
+      </div>
+    </div>
+  </header>
+  <nav>
+    <div class="nav-inner">
+      <button class="nav-btn active" data-view="palpites" onclick="switchView(this)"><i class="ti ti-ball-football"></i> Palpites</button>
+      <button class="nav-btn" data-view="ranking" onclick="switchView(this)"><i class="ti ti-trophy"></i> Ranking</button>
+      <button class="nav-btn" data-view="meus" onclick="switchView(this)"><i class="ti ti-clipboard-list"></i> Meus palpites</button>
+      <button class="nav-btn" id="adminNavBtn" data-view="admin" onclick="switchView(this)" style="display:none"><i class="ti ti-settings"></i> Admin</button>
+    </div>
+  </nav>
+  <main>
+    <div class="view active" id="view-palpites">
+      <div class="filters" id="phaseFilters">
+        <button class="filter-btn active" data-phase="" onclick="setPhaseFilter(this)"><i class="ti ti-layout-list"></i> Todos</button>
+        <button class="filter-btn" data-phase="brasil" onclick="setPhaseFilter(this)">🇧🇷 Brasil</button>
+        <button class="filter-btn" data-phase="grupos" onclick="setPhaseFilter(this)"><i class="ti ti-layout-grid"></i> Por grupo</button>
+      </div>
+      <div class="filters" id="groupFilters" style="display:none">
+        <button class="filter-btn active" data-group="" onclick="setGroupFilter(this)">Todos</button>
+        <button class="filter-btn" data-group="A" onclick="setGroupFilter(this)">Grupo A</button>
+        <button class="filter-btn" data-group="B" onclick="setGroupFilter(this)">Grupo B</button>
+        <button class="filter-btn" data-group="C" onclick="setGroupFilter(this)">Grupo C</button>
+        <button class="filter-btn" data-group="D" onclick="setGroupFilter(this)">Grupo D</button>
+        <button class="filter-btn" data-group="E" onclick="setGroupFilter(this)">Grupo E</button>
+        <button class="filter-btn" data-group="F" onclick="setGroupFilter(this)">Grupo F 🇧🇷</button>
+        <button class="filter-btn" data-group="G" onclick="setGroupFilter(this)">Grupo G</button>
+        <button class="filter-btn" data-group="H" onclick="setGroupFilter(this)">Grupo H</button>
+        <button class="filter-btn" data-group="I" onclick="setGroupFilter(this)">Grupo I</button>
+        <button class="filter-btn" data-group="J" onclick="setGroupFilter(this)">Grupo J</button>
+        <button class="filter-btn" data-group="K" onclick="setGroupFilter(this)">Grupo K</button>
+        <button class="filter-btn" data-group="L" onclick="setGroupFilter(this)">Grupo L</button>
+      </div>
+      <div id="matchList"></div>
+    </div>
+    <div class="view" id="view-ranking">
+      <div class="section-sub"><i class="ti ti-info-circle"></i> Apenas acerto exato vale pontos · 4 pts por acerto</div>
+      <div class="rank-tabs">
+        <button class="rank-tab active" onclick="switchRankTab('geral',this)">🏆 Geral</button>
+        <button class="rank-tab" onclick="switchRankTab('brasil',this)">🇧🇷 Brasil (R$ 5)</button>
+        <button class="rank-tab" onclick="switchRankTab('grupos',this)">⚽ Grupos (R$ 10)</button>
+      </div>
+      <div class="rank-panel active" id="rpanel-geral"></div>
+      <div class="rank-panel" id="rpanel-brasil"></div>
+      <div class="rank-panel" id="rpanel-grupos"></div>
+    </div>
+    <div class="view" id="view-meus">
+      <div class="tips-header">
+        <h2><i class="ti ti-clipboard-list"></i> Meus palpites</h2>
+        <button class="btn btn-ghost btn-sm" onclick="sendTipsEmail()" id="emailBtn">
+          <i class="ti ti-mail"></i> Receber por email
+        </button>
+      </div>
+      <div id="myTipsList"></div>
+    </div>
+    <div class="view" id="view-admin">
+      <div class="admin-section">
+        <div class="admin-section-title"><i class="ti ti-users"></i> Usuários</div>
+        <div id="adminUsers"></div>
+      </div>
+      <div class="admin-section">
+        <div class="admin-section-title"><i class="ti ti-edit"></i> Resultados pendentes</div>
+        <p class="section-sub"><i class="ti ti-info-circle"></i> Partidas já iniciadas sem resultado registrado.</p>
+        <div id="adminMatches"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- modal boas-vindas -->
+<div class="modal-backdrop" id="modalWelcome" style="display:none">
+  <div class="modal">
+    <div class="modal-header"><h2><i class="ti ti-confetti"></i> Bem-vindo ao Bolão!</h2></div>
+    <div class="modal-body">
+      <div class="welcome-banner">
+        <div class="welcome-banner-icon">⚽</div>
+        <div><h3>Como funciona</h3><p>Palpite o placar de cada jogo da Copa 2026 e compete com o grupo pelo maior número de acertos exatos.</p></div>
+      </div>
+      <div class="rules-section">
+        <h3><i class="ti ti-clock"></i> Prazo para palpitar</h3>
+        <ul><li>Palpites ficam abertos até <strong>1 hora antes</strong> de cada jogo.</li>
+        <li>Após esse prazo não é possível alterar ou adicionar palpites.</li></ul>
+      </div>
+      <div class="rules-section">
+        <h3><i class="ti ti-star"></i> Pontuação</h3>
+        <table class="pts-table"><thead><tr><th>Resultado</th><th>Pontos</th></tr></thead>
+        <tbody><tr><td>Placar exato</td><td><span class="pts-badge"><i class="ti ti-check"></i> 4 pts</span></td></tr>
+        <tr><td>Qualquer erro</td><td style="color:var(--text-muted)">0 pts</td></tr></tbody></table>
+      </div>
+      <div class="rules-section">
+        <h3><i class="ti ti-cash"></i> Valores por palpite</h3>
+        <table class="pts-table"><thead><tr><th>Categoria</th><th>Valor</th></tr></thead>
+        <tbody><tr><td>🇧🇷 Jogos do Brasil</td><td><span class="pts-badge">R$ 5,00</span></td></tr>
+        <tr><td>⚽ Fase de grupos</td><td><span class="pts-badge">R$ 10,00</span></td></tr></tbody></table>
+      </div>
+      <div class="rules-section">
+        <h3><i class="ti ti-filter"></i> Filtros disponíveis</h3>
+        <ul><li>Filtre por <strong>jogos do Brasil</strong> ou por grupo específico.</li>
+        <li>Em <em>Meus palpites</em> você vê o total a pagar e pode receber resumo por email.</li></ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeWelcome()"><i class="ti ti-ball-football"></i> Vamos jogar!</button>
+    </div>
+  </div>
+</div>
+
+<!-- modal regras -->
+<div class="modal-backdrop" id="modalRules" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h2><i class="ti ti-info-circle"></i> Regras do bolão</h2>
+      <button class="modal-close" onclick="closeModal('modalRules')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="rules-section">
+        <h3><i class="ti ti-users"></i> Participação</h3>
+        <ul><li>Bolão fechado — apenas participantes aprovados pelo administrador.</li>
+        <li>Um cadastro por pessoa (email único).</li></ul>
+      </div>
+      <div class="rules-section">
+        <h3><i class="ti ti-clock"></i> Prazo dos palpites</h3>
+        <ul><li>Palpites devem ser enviados até <strong>1 hora antes</strong> do início do jogo.</li>
+        <li>Após o prazo o palpite fica bloqueado e não pode ser alterado.</li>
+        <li>Jogos sem palpite não pontuam.</li></ul>
+      </div>
+      <div class="rules-section">
+        <h3><i class="ti ti-trophy"></i> Pontuação</h3>
+        <table class="pts-table"><thead><tr><th>Resultado</th><th>Pontos</th></tr></thead>
+        <tbody><tr><td>Placar exato</td><td><span class="pts-badge"><i class="ti ti-check"></i> 4 pts</span></td></tr>
+        <tr><td>Qualquer outro resultado</td><td style="color:var(--text-muted)">0 pts</td></tr></tbody></table>
+      </div>
+      <div class="rules-section">
+        <h3><i class="ti ti-cash"></i> Valores por palpite</h3>
+        <table class="pts-table"><thead><tr><th>Categoria</th><th>Valor</th></tr></thead>
+        <tbody><tr><td>🇧🇷 Jogos do Brasil</td><td><span class="pts-badge">R$ 5,00</span></td></tr>
+        <tr><td>⚽ Fase de grupos</td><td><span class="pts-badge">R$ 10,00</span></td></tr></tbody></table>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:.5rem">Pagamento combinado fora do sistema.</p>
+      </div>
+      <div class="rules-section">
+        <h3><i class="ti ti-award"></i> Desempate no ranking</h3>
+        <ul><li>Empate em pontos → desempata por quem tem mais acertos exatos.</li></ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalRules')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="ti ti-check" id="toastIcon"></i><span id="toastMsg"></span></div>
+
+<script>
+'use strict';
+let ME=null,MATCHES=[],PHASE_FILTER='',GROUP_FILTER='',IS_ADMIN=false;
+
+// Bandeiras: flagcdn.com para maioria, arquivo local para os 5 sem cobertura
+const FLAG_LOCAL={'Rep. Tcheca':'cz','Bósnia e Herz.':'ba','R.D. Congo':'cd','Suécia':'se','Iraque':'iq'};
+const FLAG={
+  'México':'mx','África do Sul':'za','Coreia do Sul':'kr',
+  'Canadá':'ca','Catar':'qa','Suíça':'ch',
+  'Brasil':'br','Marrocos':'ma','Haiti':'ht','Escócia':'gb-sct',
+  'Estados Unidos':'us','Paraguai':'py','Austrália':'au','Turquia':'tr',
+  'Alemanha':'de','Curaçao':'cw','Costa do Marfim':'ci','Equador':'ec',
+  'Holanda':'nl','Japão':'jp','Tunísia':'tn',
+  'Bélgica':'be','Egito':'eg','Irã':'ir','Nova Zelândia':'nz',
+  'Espanha':'es','Cabo Verde':'cv','Arábia Saudita':'sa','Uruguai':'uy',
+  'França':'fr','Senegal':'sn','Noruega':'no',
+  'Argentina':'ar','Argélia':'dz','Áustria':'at','Jordânia':'jo',
+  'Portugal':'pt','Uzbequistão':'uz','Colômbia':'co',
+  'Inglaterra':'gb-eng','Croácia':'hr','Gana':'gh','Panamá':'pa',
+};
+function flagImg(team,cls='team-flag'){
+  const local=FLAG_LOCAL[team];
+  if(local) return `<img class="${cls}" src="/flags/${local}.svg" alt="${team}" width="28" height="20">`;
+  const code=FLAG[team];
+  if(!code) return `<span style="font-size:18px">🏳</span>`;
+  return `<img class="${cls}" src="https://flagcdn.com/w40/${code}.png" alt="${team}" onerror="this.style.display='none'">`;
+}
+
+async function api(method,path,body){
+  const opts={method,headers:{}};
+  if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
+  const r=await fetch('/api'+path,opts);
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(d.detail||'Erro inesperado');
+  return d;
+}
+
+function setAuthMode(m){
+  document.getElementById('tabLogin').classList.toggle('active',m==='login');
+  document.getElementById('tabReg').classList.toggle('active',m==='register');
+  document.getElementById('formLogin').style.display=m==='login'?'':'none';
+  document.getElementById('formReg').style.display=m==='register'?'':'none';
+}
+async function doLogin(){
+  const err=document.getElementById('loginErr');err.textContent='';
+  try{
+    ME=await api('POST','/auth/login',{
+      username:document.getElementById('loginUser').value.trim(),
+      password:document.getElementById('loginPass').value});
+    boot();
+  }catch(e){err.textContent=e.message;}
+}
+async function doRegister(){
+  const err=document.getElementById('regErr');err.textContent='';
+  try{
+    await api('POST','/auth/register',{
+      username:document.getElementById('regUser').value.trim(),
+      email:document.getElementById('regEmail').value.trim(),
+      password:document.getElementById('regPass').value});
+    toast('Cadastro enviado! Aguarde a aprovação do administrador.','success');
+    setAuthMode('login');
+  }catch(e){err.textContent=e.message;}
+}
+async function doLogout(){
+  await api('POST','/auth/logout').catch(()=>{});
+  ME=null;show('authGate');
+}
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+async function init(){
+  try{ME=await api('GET','/auth/me');boot();}
+  catch{show('authGate');}
+}
+function boot(){
+  if(!ME){show('authGate');return;}
+  if(ME.role==='pending'){show('pendingGate');return;}
+  IS_ADMIN=ME.role==='admin';
+  document.getElementById('headerUser').textContent=ME.username;
+  document.getElementById('adminNavBtn').style.display=IS_ADMIN?'':'none';
+  show('app');
+  loadMatches();
+  if(ME.first_login) setTimeout(()=>openModal('modalWelcome'),500);
+}
+function show(id){
+  ['authGate','pendingGate','app'].forEach(x=>
+    document.getElementById(x).style.display=x===id?'':'none');
+}
+
+function openModal(id){document.getElementById(id).style.display='flex';}
+function closeModal(id){document.getElementById(id).style.display='none';}
+async function closeWelcome(){
+  closeModal('modalWelcome');
+  await api('POST','/auth/first-login-seen').catch(()=>{});
+}
+document.querySelectorAll('.modal-backdrop').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el)el.style.display='none';});
+});
+
+function switchView(btn){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+btn.dataset.view)?.classList.add('active');
+  if(btn.dataset.view==='ranking') loadRanking();
+  if(btn.dataset.view==='meus') loadMyTips();
+  if(btn.dataset.view==='admin') loadAdmin();
+}
+
+function setPhaseFilter(btn){
+  document.querySelectorAll('#phaseFilters .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');PHASE_FILTER=btn.dataset.phase;GROUP_FILTER='';
+  document.querySelectorAll('#groupFilters .filter-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('groupFilters').style.display=PHASE_FILTER==='grupos'?'':'none';
+  if(PHASE_FILTER==='grupos') document.querySelector('#groupFilters .filter-btn').classList.add('active');
+  renderMatches();
+}
+function setGroupFilter(btn){
+  document.querySelectorAll('#groupFilters .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');GROUP_FILTER=btn.dataset.group;renderMatches();
+}
+
+async function loadMatches(){
+  try{MATCHES=await api('GET','/matches');renderMatches();}
+  catch(e){toast(e.message,'error');}
+}
+function isOpen(m){
+  const ko=new Date(m.kickoff+'Z');
+  return new Date()<new Date(ko.getTime()-60*60*1000);
+}
+function fmtDate(iso){
+  return new Date(iso+'Z').toLocaleString('pt-BR',{
+    timeZone:'America/Sao_Paulo',weekday:'short',day:'2-digit',
+    month:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+
+function renderMatches(){
+  let list=[...MATCHES];
+  if(PHASE_FILTER==='brasil') list=list.filter(m=>m.home==='Brasil'||m.away==='Brasil');
+  else if(PHASE_FILTER==='grupos'){
+    list=list.filter(m=>m.phase==='grupos');
+    if(GROUP_FILTER) list=list.filter(m=>m.group_name===GROUP_FILTER);
+  }
+  if(!list.length){
+    document.getElementById('matchList').innerHTML=
+      '<div class="empty"><div class="empty-icon"><i class="ti ti-clipboard-x"></i></div>Nenhuma partida neste filtro.</div>';
+    return;
+  }
+  const groups={};
+  list.forEach(m=>{
+    const d=new Date(m.kickoff+'Z').toLocaleDateString('pt-BR',{
+      timeZone:'America/Sao_Paulo',weekday:'long',day:'numeric',month:'long'});
+    (groups[d]=groups[d]||[]).push(m);
+  });
+  let html='';
+  for(const [day,ms] of Object.entries(groups)){
+    html+=`<div class="match-group"><div class="match-group-label"><i class="ti ti-calendar"></i> ${day}</div>`;
+    ms.forEach(m=>{html+=matchCard(m);});
+    html+='</div>';
+  }
+  document.getElementById('matchList').innerHTML=html;
+  document.querySelectorAll('.tip-input').forEach(inp=>{
+    inp.addEventListener('change',()=>{
+      const card=inp.closest('.match-card');
+      if(card) saveTip(card.dataset.id);
+    });
+  });
+}
+
+function matchCard(m){
+  const open=isOpen(m),finished=m.status==='finished',locked=!open&&!finished;
+  const isBrasil=m.home==='Brasil'||m.away==='Brasil';
+  const tip=m.my_tip;
+  let statusBadge=finished
+    ?'<span class="badge badge-finished"><i class="ti ti-check"></i> Encerrada</span>'
+    :open?'<span class="badge badge-open"><i class="ti ti-lock-open"></i> Aberto</span>'
+    :'<span class="badge badge-soon"><i class="ti ti-lock"></i> Fechado</span>';
+
+  let tipSection='';
+  if(finished){
+    const hit=tip&&tip.home===m.home_score&&tip.away===m.away_score;
+    tipSection=`<div class="locked-tip">
+      <i class="ti ti-${tip?(hit?'circle-check':'circle-x'):'minus'}"></i>
+      ${tip?`Seu palpite: <strong>${tip.home} × ${tip.away}</strong>`:'Sem palpite registrado'}
+      ${tip?`<span class="tip-pill ${hit?'tip-hit':'tip-miss'}">${hit?'✓ +4 pts':'✗ 0 pts'}</span>`:''}
+    </div>`;
+  }else if(locked){
+    tipSection=`<div class="locked-tip">
+      <i class="ti ti-lock"></i>
+      ${tip?`Palpite enviado: <strong>${tip.home} × ${tip.away}</strong>
+        <span class="tip-pill tip-pending"><i class="ti ti-clock"></i> aguardando resultado</span>`
+           :'Prazo encerrado, sem palpite registrado.'}
+    </div>`;
+  }else{
+    const h=tip!==null?tip.home:'',a=tip!==null?tip.away:'';
+    tipSection=`<div class="tip-row">
+      <span class="tip-label"><i class="ti ti-pencil"></i> Seu palpite</span>
+      <input class="tip-input" type="number" min="0" max="20" placeholder="0" value="${h}" data-side="home">
+      <span class="tip-sep">×</span>
+      <input class="tip-input" type="number" min="0" max="20" placeholder="0" value="${a}" data-side="away">
+      <button class="btn btn-primary btn-sm" onclick="saveTipBtn('${m.id}')">
+        <i class="ti ti-check"></i> Salvar
+      </button>
+      <span class="tip-saved" id="saved-${m.id}"><i class="ti ti-circle-check"></i> salvo</span>
+    </div>`;
+  }
+
+  // admin: resultado inline em cards encerrados ou bloqueados
+  let adminSection='';
+  if(IS_ADMIN && !open){
+    adminSection=`<div class="admin-result-row">
+      <label><i class="ti ti-edit"></i> Resultado</label>
+      <input class="res-input" type="number" min="0" max="20" id="arh-${m.id}" placeholder="0" value="${m.home_score!==null?m.home_score:''}">
+      <span style="color:var(--gray-400);font-weight:500">×</span>
+      <input class="res-input" type="number" min="0" max="20" id="ara-${m.id}" placeholder="0" value="${m.away_score!==null?m.away_score:''}">
+      <button class="btn btn-primary btn-sm" onclick="saveResultInline('${m.id}')">
+        <i class="ti ti-${finished?'refresh':'check'}"></i> ${finished?'Atualizar':'Salvar'}
+      </button>
+    </div>`;
+  }
+
+  const homeScore=finished?`<span class="score-num">${m.home_score}</span>`:'';
+  const awayScore=finished?`<span class="score-num">${m.away_score}</span>`:'';
+
+  return `<div class="match-card ${finished?'finished':''} ${locked?'locked':''} ${isBrasil?'brasil-card':''}" data-id="${m.id}">
+    <div class="match-header">
+      <div class="match-meta">
+        <span class="badge badge-group"><i class="ti ti-layout-grid"></i> Grupo ${m.group_name}</span>
+        ${isBrasil?'<span style="font-size:13px">🇧🇷</span>':''}
+        <span><i class="ti ti-clock" style="font-size:13px;vertical-align:-2px"></i> ${fmtDate(m.kickoff)}</span>
+      </div>
+      ${statusBadge}
+    </div>
+    <div class="match-teams">
+      <div class="team-side">${flagImg(m.home)}<span class="team-name">${m.home}</span></div>
+      <div class="score-display">${homeScore}<span class="score-sep">×</span>${awayScore}</div>
+      <div class="team-side away"><span class="team-name">${m.away}</span>${flagImg(m.away)}</div>
+    </div>
+    ${tipSection}
+    ${adminSection}
+  </div>`;
+}
+
+function saveTipBtn(mid){saveTip(mid);}
+async function saveTip(mid){
+  const card=document.querySelector(`.match-card[data-id="${mid}"]`);
+  if(!card) return;
+  const h=card.querySelector('[data-side="home"]')?.value;
+  const a=card.querySelector('[data-side="away"]')?.value;
+  if(h===''||a===''){toast('Preencha os dois placares.','error');return;}
+  try{
+    await api('POST','/tip',{match_id:mid,home_tip:+h,away_tip:+a});
+    const saved=document.getElementById('saved-'+mid);
+    if(saved){saved.classList.add('show');setTimeout(()=>saved.classList.remove('show'),2500);}
+    const m=MATCHES.find(x=>x.id===mid);
+    if(m) m.my_tip={home:+h,away:+a};
+  }catch(e){toast(e.message,'error');}
+}
+
+async function saveResultInline(mid){
+  const h=document.getElementById('arh-'+mid)?.value;
+  const a=document.getElementById('ara-'+mid)?.value;
+  if(h===''||a===''){toast('Preencha o placar completo.','error');return;}
+  try{
+    await api('POST','/admin/result',{match_id:mid,home_score:+h,away_score:+a});
+    toast('Resultado salvo!','success');
+    await loadMatches();
+  }catch(e){toast(e.message,'error');}
+}
+
+function switchRankTab(tab, btn){
+  document.querySelectorAll('.rank-tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.rank-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('rpanel-'+tab).classList.add('active');
+}
+
+function buildRankHtml(data, rankField, ptsField, exactField, tipsField, subtitle){
+  if(!data.length) return '<div class="empty"><div class="empty-icon"><i class="ti ti-trophy"></i></div>Nenhum palpite pontuado ainda.<p>Os pontos aparecem após os resultados dos jogos.</p></div>';
+  const medals=['🥇','🥈','🥉'];
+  // ordena pelo rank específico desta aba
+  const sorted=[...data].sort((a,b)=>a[rankField]-b[rankField]);
+  let html=`<div class="ranking-card"><div class="ranking-header">
+    <i class="ti ti-trophy"></i>
+    <div><h3>${subtitle}</h3><span>${data.length} participante${data.length>1?'s':''}</span></div>
+  </div>`;
+  sorted.forEach(p=>{
+    const pos=p[rankField];
+    const pts=p[ptsField]??0;
+    const exact=p[exactField]??0;
+    const tips=p[tipsField]??0;
+    html+=`<div class="ranking-row ${p.is_self?'me':''}">
+      <div class="rank-pos">${medals[pos-1]?`<span class="rank-medal">${medals[pos-1]}</span>`:pos}</div>
+      <div class="rank-name">${p.username}${p.is_self?'<span class="rank-you">você</span>':''}</div>
+      <div style="text-align:right">
+        <div class="rank-pts">${pts} pts</div>
+        <div class="rank-meta">${exact} exato${exact!==1?'s':''} · ${tips} palpite${tips!==1?'s':''}</div>
+        <div class="rank-devido">R$ ${(p.total_devido||0).toFixed(2)}</div>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  return html;
+}
+
+async function loadRanking(){
+  try{
+    const data=await api('GET','/ranking');
+    document.getElementById('rpanel-geral').innerHTML =
+      buildRankHtml(data,'rank',      'points',    'exact',        'tips_count', 'Classificação geral');
+    document.getElementById('rpanel-brasil').innerHTML=
+      buildRankHtml(data,'rank_brasil','pts_brasil','exact_brasil', 'tips_brasil','🇧🇷 Brasil — R$ 5 por palpite');
+    document.getElementById('rpanel-grupos').innerHTML=
+      buildRankHtml(data,'rank_grupos','pts_grupos','exact_grupos', 'tips_grupos','⚽ Fase de grupos — R$ 10 por palpite');
+  }catch(e){toast(e.message,'error');}
+}
+
+async function loadMyTips(){
+  try{
+    const resp=await api('GET','/my-tips');
+    const data=resp.tips||[];const preco=resp.preco||{};
+    if(!data.length){
+      document.getElementById('myTipsList').innerHTML=
+        '<div class="empty"><div class="empty-icon"><i class="ti ti-clipboard-list"></i></div>Você ainda não fez nenhum palpite.<p>Vá até a aba Palpites para começar.</p></div>';
+      return;
+    }
+    const pb=preco.preco_brasil||5,pg=preco.preco_grupos||10;
+    const temBrasil=preco.tem_brasil||preco.palpites_brasil>0;
+    const temGrupos=preco.tem_grupos||preco.palpites_grupos>0;
+    let html=`<div class="preco-card">
+      <div class="preco-title"><i class="ti ti-cash"></i> Valor a pagar</div>
+      <div class="preco-rows">
+        <div class="preco-row">
+          <span>🇧🇷 Jogos do Brasil <span class="preco-qtd">valor fixo</span></span>
+          <span class="preco-val">${temBrasil?'R$ '+pb.toFixed(2):'—'}</span>
+        </div>
+        <div class="preco-row">
+          <span>⚽ Fase de grupos <span class="preco-qtd">valor fixo</span></span>
+          <span class="preco-val">${temGrupos?'R$ '+pg.toFixed(2):'—'}</span>
+        </div>
+      </div>
+      <div class="preco-total"><span>Total</span>
+        <span class="preco-total-val">R$ ${(preco.total_devido||0).toFixed(2)}</span>
+      </div>
+      <p class="preco-obs"><i class="ti ti-info-circle"></i> Pagamento combinado fora do sistema.</p>
+    </div>`;
+    data.forEach(t=>{
+      const finished=t.status==='finished';
+      const hit=finished&&t.home_tip===t.home_score&&t.away_tip===t.away_score;
+      const isBrasil=t.home==='Brasil'||t.away==='Brasil';
+      let tag=finished
+        ?`<span class="tip-pill ${hit?'tip-hit':'tip-miss'}">${hit?'✓ +4':'✗ 0'}</span>`
+        :`<span class="tip-pill tip-pending"><i class="ti ti-clock"></i> aguardando</span>`;
+      html+=`<div class="tip-item">
+        <div class="tip-match">
+          <div class="tip-match-teams">
+            ${flagImg(t.home,'tip-flag')} ${t.home} × ${t.away} ${flagImg(t.away,'tip-flag')}
+            ${isBrasil?'🇧🇷':''}
+          </div>
+          <div class="tip-match-meta">
+            <i class="ti ti-layout-grid"></i> Grupo ${t.group_name}
+            · <i class="ti ti-calendar"></i> ${fmtDate(t.kickoff)}
+            · <span style="color:var(--green);font-weight:600">R$ ${isBrasil?pb:pg}</span>
+          </div>
+        </div>
+        <div class="tip-score">${t.home_tip} × ${t.away_tip}</div>
+        ${tag}
+      </div>`;
+    });
+    document.getElementById('myTipsList').innerHTML=html;
+  }catch(e){toast(e.message,'error');}
+}
+
+async function sendTipsEmail(){
+  const btn=document.getElementById('emailBtn');
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Enviando…';
+  try{
+    await api('POST','/my-tips/email');
+    toast('Recibo enviado para '+ME.email,'success');
+  }catch(e){toast(e.message,'error');}
+  finally{btn.disabled=false;btn.innerHTML='<i class="ti ti-mail"></i> Receber por email';}
+}
+
+async function loadAdmin(){
+  try{
+    const users=await api('GET','/admin/users');
+    const pending=users.filter(u=>u.role==='pending');
+    let uhtml='';
+    pending.forEach(u=>{uhtml+=userRow(u,true);});
+    if(pending.length) uhtml+='<div style="height:8px"></div>';
+    users.filter(u=>u.role!=='pending').forEach(u=>{uhtml+=userRow(u,false);});
+    document.getElementById('adminUsers').innerHTML=uhtml||'<p style="color:var(--text-muted);font-size:14px">Nenhum usuário.</p>';
+    const matches=await api('GET','/matches');
+    const now=Date.now();
+    const pending_results=matches.filter(m=>
+      new Date(m.kickoff+'Z').getTime()<now && m.status!=='finished');
+    if(!pending_results.length){
+      document.getElementById('adminMatches').innerHTML=
+        '<p style="color:var(--text-muted);font-size:14px"><i class="ti ti-circle-check" style="color:var(--green)"></i> Nenhum resultado pendente.</p>';
+      return;
+    }
+    let mhtml='';
+    pending_results.forEach(m=>{
+      mhtml+=`<div class="match-card" data-id="${m.id}" style="margin-bottom:8px">
+        <div class="match-teams" style="margin-bottom:0">
+          <div class="team-side">${flagImg(m.home)}<span class="team-name">${m.home}</span></div>
+          <div class="score-display"><span class="score-sep" style="font-size:14px;color:var(--gray-400)">×</span></div>
+          <div class="team-side away"><span class="team-name">${m.away}</span>${flagImg(m.away)}</div>
+        </div>
+        <div class="admin-result-row">
+          <label><i class="ti ti-edit"></i> Resultado</label>
+          <input class="res-input" type="number" min="0" max="20" id="arh-${m.id}" placeholder="0">
+          <span style="color:var(--gray-400);font-weight:500">×</span>
+          <input class="res-input" type="number" min="0" max="20" id="ara-${m.id}" placeholder="0">
+          <button class="btn btn-primary btn-sm" onclick="saveResultInline('${m.id}')">
+            <i class="ti ti-check"></i> Salvar
+          </button>
+          <span style="font-size:12px;color:var(--text-muted)">Grupo ${m.group_name} · ${fmtDate(m.kickoff)}</span>
+        </div>
+      </div>`;
+    });
+    document.getElementById('adminMatches').innerHTML=mhtml;
+  }catch(e){toast(e.message,'error');}
+}
+
+function userRow(u,isPending){
+  return `<div class="user-row">
+    <div class="user-row-info">
+      <div class="user-row-name">${isPending?'<span class="pending-tag">pendente</span> ':''}${u.username}</div>
+      <div class="user-row-email"><i class="ti ti-mail" style="font-size:12px"></i> ${u.email}</div>
+    </div>
+    <select class="role-select" data-uid="${u.id}" onchange="setRole(this)">
+      <option value="pending" ${u.role==='pending'?'selected':''}>pendente</option>
+      <option value="user" ${u.role==='user'?'selected':''}>usuário</option>
+      <option value="admin" ${u.role==='admin'?'selected':''}>admin</option>
+      <option value="banned" ${u.role==='banned'?'selected':''}>banido</option>
+    </select>
+  </div>`;
+}
+async function setRole(sel){
+  try{
+    await api('POST',`/admin/users/${sel.dataset.uid}/role`,{role:sel.value});
+    toast(sel.value==='user'?'Usuário aprovado!':'Papel atualizado.','success');
+    loadAdmin();
+  }catch(e){toast(e.message,'error');}
+}
+
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');
+  document.getElementById('toastIcon').className=`ti ti-${type==='error'?'alert-circle':'circle-check'}`;
+  document.getElementById('toastMsg').textContent=msg;
+  t.className=`toast ${type} show`;
+  clearTimeout(toast._t);
+  toast._t=setTimeout(()=>t.classList.remove('show'),3500);
+}
+init();
+</script>
+</body>
+</html>

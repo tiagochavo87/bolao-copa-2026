@@ -1,0 +1,21 @@
+services:
+  bolao:
+    build: .
+    container_name: bolao
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:8000:8000"
+    environment:
+      BOLAO_DB: /data/bolao.db
+      BOLAO_SECRET: "${BOLAO_SECRET}"
+      ADMIN_USER: "${ADMIN_USER:-admin}"
+      ADMIN_PASS: "${ADMIN_PASS}"
+      GMAIL_USER: "${GMAIL_USER}"
+      GMAIL_APP: "${GMAIL_APP}"
+      PRECO_BRASIL: "5"
+      PRECO_GRUPOS: "10"
+    volumes:
+      - bolao-data:/data
+
+volumes:
+  bolao-data:
